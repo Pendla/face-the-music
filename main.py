@@ -90,3 +90,27 @@ def calculate_codecs_by_person(images_by_person):
                 codecs_by_person[identifier].append(encodings[0])
 
     return codecs_by_person
+
+images_by_person = find_images_by_person("faces/")
+codecs_by_person = calculate_codecs_by_person(images_by_person)
+
+unknown_image = face_recognition.load_image_file('unknown.jpg')
+unknown_encodings = face_recognition.face_encodings(unknown_image)
+
+identified_person = False
+for identifier, codecs in codecs_by_person.items():
+    for unknown_encoding in unknown_encodings:
+        result = face_recognition.compare_faces(codecs, unknown_encoding)
+        if any(result):
+            print("The person in the picture was {}.".format(identifier))
+            identified_person = True
+            break
+
+    if identified_person:
+        break
+
+if not identified_person:
+    print(
+        "Could not identify the person in the picture. Try another one or " +
+        "provide more example pictures"
+    )
