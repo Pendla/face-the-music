@@ -2,7 +2,7 @@
 ##                       PROJECT SPECIFIC                      ##
 ##                                                             ##
 
-faces/*.*
+faces/**/*.*
 !faces/.gitkeep
 
 
