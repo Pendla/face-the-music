@@ -54,3 +54,39 @@ def find_images_by_person(path, supported_formats=['jpg', 'jpeg', 'png']):
         result[identifier].extend(image_files)
 
     return result
+
+def calculate_codecs_by_person(images_by_person):
+    """Converts a dictionary with array of image paths as values into a
+    dictionary with an array of face codecs as values.
+
+    Params:
+        images_by_person: A dictionary where each key is a person and the
+            values is an array of paths to images with only that person in the
+            image.
+
+    Returns:
+        A dictionary with one entry per entry in the images_by_person param.
+        The values for each key is an array of face codecs.
+    """
+    codecs_by_person = collections.defaultdict(list)
+
+    for identifier, img_paths in images_by_person.items():
+        for img in [face_recognition.load_image_file(p) for p in img_paths]:
+            encodings = face_recognition.face_encodings(img)
+
+            if not encodings:
+                print(
+                    ("Couldn't find a face in training image {} for {}. "
+                     "Skipping this image.").format(img, identifier)
+                )
+            elif len(encodings) > 1:
+                print(
+                    ("Found more than 1 face in training image {} for {}. "
+                     "Skipping this image.").format(img, identifier)
+                )
+            else:
+                # At this point we know length of encodings is 1. Thus we can
+                # safely extract index 0
+                codecs_by_person[identifier].append(encodings[0])
+
+    return codecs_by_person
